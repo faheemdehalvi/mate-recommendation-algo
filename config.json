@@ -1,0 +1,21 @@
+{
+  "recall_k": 100,
+  "weights": {
+    "similarity": 0.30,
+    "complementarity": 0.20,
+    "vedic_lite": 0.50
+  },
+  "vedic": {
+    "min_conf": 0.30,
+    "low_conf_shrink": 0.5
+  },
+  "comp_mix": {
+    "energy": 0.34,
+    "humor": 0.33,
+    "risk": 0.33
+  },
+  "novelty_value": 0.05,
+  "prior_value": 0.0,
+  "age_penalty": 0.0,
+  "filters": { "gender": true, "age": true, "city": true }
+}
