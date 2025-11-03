@@ -1,0 +1,205 @@
+🧠 Prompt for Codex
+You are writing production-grade Python code for a research-grade matchmaking recommender.
+This module should generate synthetic survey data, derive T (trait) and E (engagement) embeddings from that data, and store everything in a local database (SQLite) for later fusion with astrological attributes.
+
+Absolutely no API calls, no OpenAI dependencies, and no internet use.
+
+🔧 Deliverables
+Create a Python project with the following files:
+
+markdown
+Copy code
+survey_matchmaker/
+├── __init__.py
+├── data_generator.py
+├── feature_engineering.py
+├── recommender.py
+├── database_builder.py
+├── cli.py
+└── tests/
+    └── test_pipeline.py
+🎯 Goal
+Generate and store synthetic datasets for 9 surveys, each with 3 questions, and compute user-level T (t0–t9) and E (e0–e9) attributes.
+Then use these attributes to simulate user-to-user compatibility scores via a recommendation algorithm (cosine similarity + weighted blend).
+
+📊 Data Design
+1. Synthetic Surveys
+Each survey has 3 questions, modeled as personality or behavior cues:
+
+Survey 1: humor, spontaneity, creativity
+
+Survey 2: empathy, patience, forgiveness
+
+Survey 3: curiosity, adventure, adaptability
+
+Survey 4: discipline, ambition, risk appetite
+
+Survey 5: honesty, loyalty, authenticity
+
+Survey 6: communication, attachment, independence
+
+Survey 7: optimism, cynicism, realism
+
+Survey 8: emotional depth, trust, resilience
+
+Survey 9: affection, boundaries, passion
+
+Each question has answers on a 1–5 Likert scale.
+
+Generate 200 synthetic users, each with:
+
+json
+Copy code
+{
+  "user_id": int,
+  "name": "string",
+  "age": int,
+  "gender": "M/F",
+  "city": "string",
+  "survey_answers": {"s1_q1": int, ..., "s9_q3": int}
+}
+Store all responses in a Pandas DataFrame and also write to a CSV.
+
+🧩 Feature Engineering (feature_engineering.py)
+Compute T (traits) and E (engagement) embeddings for each user.
+
+Rules (you must encode deterministically):
+
+T0: Humor → average of survey1 answers / 5
+
+T1: Empathy → avg of survey2
+
+T2: Curiosity → avg of survey3
+
+T3: Discipline → avg of survey4
+
+T4: Authenticity → avg of survey5
+
+T5: Communication → avg of survey6
+
+T6: Optimism → avg of survey7
+
+T7: Emotional depth → avg of survey8
+
+T8: Affection → avg of survey9
+
+T9: Stability → composite of (survey4 + survey5 + survey6 averages)/3
+
+Normalize all to [0,1].
+
+Engagement (E) features:
+
+e0: Humor response time → random(0.5–1) * T0
+
+e1: Emotional reciprocity → avg(T1, T7, T8)
+
+e2: Novelty seeking → avg(T2, T6)
+
+e3: Stability vs chaos → 1 - T9
+
+e4: Communication frequency → 0.5 + (T5 / 2)
+
+e5: Responsiveness variance → random(0–0.2) noise + (1 - e3)
+
+e6: Attachment speed → sigmoid(T7 + T8 - T9)
+
+e7: Humor adaptability → (T0 + T2 + T6) / 3
+
+e8: Empathy modulation → (T1 + T7) / 2
+
+e9: Independence → (1 - T5)
+
+Return all values as floats between 0 and 1.
+
+🧮 Recommender Logic (recommender.py)
+Implement a hybrid similarity function:
+
+python
+Copy code
+def compute_match_score(userA, userB):
+    """
+    Combine T-similarity and E-similarity.
+    final_score = 0.6 * cosine(TA, TB) + 0.4 * cosine(EA, EB)
+    Returns: float (0..1)
+    """
+Add functions:
+
+find_best_matches(user_id, top_k=5) → returns list of (user_id, score)
+
+recommend_pairs() → randomly pairs users with score > 0.75 and logs to DB.
+
+🗄️ Database Builder (database_builder.py)
+Create a local SQLite database survey_matchmaker.db with these tables:
+
+users (user_id INT PRIMARY KEY, name TEXT, age INT, gender TEXT, city TEXT)
+
+survey_responses (user_id INT, sX_qY INT …)
+
+traits (user_id INT, t0–t9 FLOAT)
+
+engagement (user_id INT, e0–e9 FLOAT)
+
+matches (user_id_a INT, user_id_b INT, score FLOAT)
+
+Add integrity checks and foreign keys.
+
+💻 CLI (cli.py)
+Command-line interface options:
+
+bash
+Copy code
+python -m survey_matchmaker.cli --generate
+python -m survey_matchmaker.cli --build-db
+python -m survey_matchmaker.cli --compute-features
+python -m survey_matchmaker.cli --recommend --top 5
+Each step prints pretty logs and saves progress.
+
+🧪 Tests (tests/test_pipeline.py)
+Test pipeline integrity:
+
+Dataset shape correct.
+
+T/E feature keys exist, all 0–1.
+
+Match scores ∈ [0,1].
+
+DB tables created correctly and populated.
+
+🚀 Extra Credit (optional)
+If time allows:
+
+Add basic visualization (matplotlib scatter for t0 vs t9 across genders).
+
+Add export to JSON.
+
+Add “merge ready” function:
+
+python
+Copy code
+def merge_with_astro_features(te_df, astro_df): ...
+to join on user_id for future integration with astrological data.
+
+🧭 Coding standards
+Python 3.10+, fully typed.
+
+Use numpy, pandas, sqlite3, scikit-learn (for cosine).
+
+Deterministic random seed (e.g., 42).
+
+No external API dependencies or network use.
+
+Clean logging and comments for every transformation.
+
+🧠 Output expectation
+The script should end-to-end:
+
+Generate synthetic responses for 200 users across 9×3 questions.
+
+Compute t0–t9, e0–e9 features.
+
+Populate a relational database.
+
+Run a recommendation to suggest top matches.
+
+Save results in matches.csv.
+
