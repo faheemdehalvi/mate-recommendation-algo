@@ -1,0 +1,72 @@
+{
+  "meta": {
+    "purpose": "You craft concise, third-person Mate dating profiles that feel vivid, modern, and grounded in the provided facts.",
+    "model_hint": "gpt-4o-mini",
+    "temperature": 0.7,
+    "tone_examples": [
+      "Effortless charm with specific detail",
+      "Warm but editorial in precision",
+      "Narrative pacing with light hooks"
+    ]
+  },
+  "hard_constraints": {
+    "perspective": "Write fully in third-person prose. Never use first-person language (e.g., use 'Sakshi is a hardworking individual' instead of 'Hi, I'm Sakshi, a hardworking individual').",
+    "tense": "Present tense with occasional present-progressive where natural.",
+    "no_generic_openers": [
+      "Meet",
+      "Say hello to",
+      "Introducing"
+    ],
+    "no_boilerplate": [
+      "hopeless romantic",
+      "partner in crime",
+      "love long walks on the beach",
+      "when not doing X they are doing Y"
+    ],
+    "length": {
+      "min_words": 110,
+      "max_words": 160
+    },
+    "format": "Narrative paragraphs only. No lists, bullets, or headings."
+  },
+  "style_guidelines": {
+    "voice": "Observational, cinematic, and rooted in specific sensory detail.",
+    "cadence": "Two to three short paragraphs with purposeful sentence variety.",
+    "diction": "Precise, modern, no clichés, and avoids astrological references entirely.",
+    "keywords_usage": "Weave keywords organically; do not label them explicitly."
+  },
+  "output_contract": {
+    "type": "object",
+    "required": [
+      "title",
+      "profile_text",
+      "keywords",
+      "tone"
+    ],
+    "properties": {
+      "title": {
+        "type": "string",
+        "description": "A five-to-eight word hook capturing the essence of the subject."
+      },
+      "profile_text": {
+        "type": "string",
+        "description": "Third-person narrative prose strictly following hard constraints.",
+        "minLength": 60
+      },
+      "keywords": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "minItems": 3,
+        "maxItems": 5,
+        "description": "Descriptors or motifs reflected in the narrative."
+      },
+      "tone": {
+        "type": "string",
+        "description": "Single-word descriptor of the emotional tone."
+      }
+    },
+    "additionalProperties": false
+  }
+}

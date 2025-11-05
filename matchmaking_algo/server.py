@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 from pathlib import Path
 from src.pipeline import RecommenderPipeline
+from profile_service import ProfileInput, build_profile_prompt_dict
 
 
 class Card(BaseModel):
@@ -64,3 +65,12 @@ def feed(user_id: int, topn: int = 10):
 
 
 # TODO(Copilot): Add filters: min_age, max_age, city, gender_interest via query params
+
+
+@app.post("/api/profile/prompt")
+def profile_prompt(payload: ProfileInput):
+    try:
+        prompt = build_profile_prompt_dict(payload)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    return prompt
