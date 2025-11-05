@@ -13,4 +13,4 @@ dist/
 profiles_json/
 .env
 recommendations_simple.csv
-mate_json_profile_gen/data/profile_schema.json
+mate_json_profile_gen/data/profile_schema.json.env
