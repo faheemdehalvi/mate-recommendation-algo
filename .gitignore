@@ -10,5 +10,7 @@ venv/
 build/
 dist/
 *.egg-info/
+profiles_json/
+.env
 recommendations_simple.csv
 
